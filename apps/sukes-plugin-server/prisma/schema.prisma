@@ -1,0 +1,41 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AppModel {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String?
+  url       String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  cookies   Cookie[]
+}
+
+model Cookie {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  data       Json?
+  appField   AppModel? @relation(fields: [appFieldId], references: [id])
+  appFieldId String?
+}
+
+model User {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  firstName String?
+  lastName  String?
+  username  String     @unique
+  email     String?    @unique
+  password  String
+  roles     Json
+  apps      AppModel[]
+}
